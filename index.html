@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Mi Amor Eterno 💕</title>
+<style>
+* {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  background: linear-gradient(135deg, #0f051a 0%, #1a0a2e 30%, #16213e 65%, #0f3460 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: 'Georgia', serif;
+  position: fixed;
+  inset: 0;
+  touch-action: manipulation;
+}
+
+/* ── Partículas ── */
+#particles {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Escena principal ── */
+#wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; height: 100%;
+  z-index: 10;
+  gap: 12px;
+}
+
+#scene {
+  cursor: pointer;
+  display: block;
+  width: min(88vw, 420px);
+  height: auto;
+  touch-action: manipulation;
+  filter: drop-shadow(0 0 22px rgba(232,67,147,0.35));
+  transition: filter 0.3s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+#scene:active { transform: scale(0.97); }
+
+/* Imagen final (panda love u) */
+#finalImg {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  opacity: 0;
+  width: min(82vw, 320px);
+  border-radius: 28px;
+  box-shadow: 0 0 60px rgba(232,67,147,0.7), 0 0 120px rgba(232,67,147,0.3);
+  pointer-events: none;
+  z-index: 200;
+  object-fit: cover;
+  border: 4px solid rgba(255,107,186,0.9);
+  transform: scale(0.4) rotate(-5deg);
+  transition: opacity 0.7s cubic-bezier(0.34,1.56,0.64,1),
+              transform 0.7s cubic-bezier(0.34,1.56,0.64,1);
+  display: block;
+}
+#finalImg.show {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Overlay oscuro detrás de la imagen */
+#img-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0);
+  z-index: 199;
+  pointer-events: none;
+  transition: background 0.5s ease;
+}
+#img-overlay.show {
+  background: rgba(0,0,0,0.6);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* ── Contador de corazones ── */
+#heart-counter {
+  position: fixed;
+  bottom: env(safe-area-inset-bottom, 16px);
+  right: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  color: #ff6bba;
+  font-size: clamp(13px, 3.5vw, 18px);
+  letter-spacing: 2px;
+  z-index: 30;
+  background: rgba(232,67,147,0.22);
+  padding: 9px 14px;
+  border-radius: 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255,107,186,0.4);
+  text-shadow: 0 0 12px rgba(232,67,147,0.7);
+  box-shadow: inset 0 0 10px rgba(232,67,147,0.15), 0 4px 14px rgba(0,0,0,0.35);
+  animation: heartPulse 1.8s ease-in-out infinite;
+  font-weight: bold;
+}
+@keyframes heartPulse {
+  0%,100% { transform: scale(1); }
+  50%      { transform: scale(1.12); text-shadow: 0 0 22px rgba(232,67,147,1); }
+}
+
+/* ── Botón música ── */
+#music-btn {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  right: 16px;
+  background: rgba(232,67,147,0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #ff6bba;
+  border: 1.5px solid rgba(255,107,186,0.5);
+  padding: 10px 16px;
+  border-radius: 14px;
+  font-size: clamp(12px, 3vw, 15px);
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  z-index: 30;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  min-height: 48px; min-width: 48px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: 0 4px 18px rgba(232,67,147,0.2);
+  text-shadow: 0 0 8px rgba(232,67,147,0.5);
+}
+#music-btn:active {
+  transform: scale(0.91);
+  background: rgba(232,67,147,0.5);
+}
+#music-btn.playing { animation: musicPulse 1.2s ease-in-out infinite; }
+@keyframes musicPulse {
+  0%,100% { box-shadow: 0 4px 18px rgba(232,67,147,0.25); }
+  50%      { box-shadow: 0 4px 28px rgba(232,67,147,0.7); }
+}
+
+/* ── Hint toca ── */
+#click-hint {
+  position: fixed;
+  bottom: max(70px, calc(env(safe-area-inset-bottom) + 60px));
+  left: 50%; transform: translateX(-50%);
+  color: rgba(255,107,186,0.75);
+  font-size: clamp(12px, 3vw, 15px);
+  text-align: center;
+  pointer-events: none;
+  z-index: 5;
+  letter-spacing: 1px;
+  font-style: italic;
+  text-shadow: 0 0 12px rgba(232,67,147,0.5);
+  animation: hintFloat 2.8s ease-in-out infinite;
+  transition: opacity 0.5s ease;
+  white-space: nowrap;
+}
+@keyframes hintFloat {
+  0%,100% { transform: translateX(-50%) translateY(0);   opacity: 0.85; }
+  50%      { transform: translateX(-50%) translateY(-10px); opacity: 0.5; }
+}
+
+/* ── Pantalla de desbloqueo (para autoplay móvil) ── */
+#unlock-screen {
+  position: fixed; inset: 0;
+  background: rgba(10,3,20,0.92);
+  z-index: 100;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 0.5s ease;
+}
+#unlock-screen.hidden { opacity: 0; pointer-events: none; }
+#unlock-screen .heart-big {
+  font-size: clamp(60px, 20vw, 90px);
+  animation: heartPulse 1.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(232,67,147,0.8));
+}
+#unlock-screen p {
+  color: #ff6bba;
+  font-size: clamp(16px, 4.5vw, 22px);
+  text-align: center;
+  letter-spacing: 1px;
+  font-style: italic;
+  text-shadow: 0 0 15px rgba(232,67,147,0.6);
+  padding: 0 30px;
+  line-height: 1.5;
+}
+#unlock-btn {
+  background: linear-gradient(135deg, #e84393, #c0006a);
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 50px;
+  font-size: clamp(15px, 4vw, 19px);
+  font-family: 'Georgia', serif;
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-shadow: 0 6px 30px rgba(232,67,147,0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: heartPulse 1.8s ease-in-out infinite;
+}
+#unlock-btn:active { transform: scale(0.94); }
+
+/* ── Mensajes flotantes románticos ── */
+.romantic-msg {
+  position: fixed;
+  font-size: clamp(11px, 3.5vw, 16px);
+  color: #ff6bba;
+  font-style: italic;
+  text-shadow: 0 0 12px rgba(232,67,147,0.8);
+  pointer-events: none;
+  z-index: 20;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  animation: msgFloat 3.8s ease-out forwards;
+  font-family: 'Georgia', serif;
+  white-space: nowrap;
+}
+@keyframes msgFloat {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  80%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-70px) scale(0.8); }
+}
+
+/* ── Corazón CSS volador ── */
+.fly-heart {
+  position: fixed;
+  font-size: clamp(16px, 4vw, 24px);
+  pointer-events: none;
+  z-index: 20;
+  animation: flyUp 2.4s ease-out forwards;
+  filter: drop-shadow(0 0 6px rgba(232,67,147,0.7));
+}
+@keyframes flyUp {
+  0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(-120px) scale(0.5) rotate(20deg); }
+}
+
+/* ── Ripple al tocar ── */
+.ripple {
+  position: fixed;
+  border-radius: 50%;
+  border: 2px solid rgba(232,67,147,0.6);
+  pointer-events: none;
+  z-index: 18;
+  width: 10px; height: 10px;
+  animation: rippleOut 0.8s ease-out forwards;
+}
+@keyframes rippleOut {
+  0%   { transform: translate(-50%,-50%) scale(1);  opacity: 0.8; }
+  100% { transform: translate(-50%,-50%) scale(18); opacity: 0; }
+}
+
+/* ── Media queries ── */
+@media (max-width: 380px) {
+  #scene { width: 94vw; }
+  #heart-counter { padding: 7px 11px; font-size: 12px; right: 10px; }
+  #music-btn { padding: 9px 12px; right: 10px; }
+}
+@media (max-height: 600px) {
+  #scene { width: min(60vw, 280px); }
+  #click-hint { bottom: 55px; }
+}
+@media (min-width: 768px) {
+  #scene { width: min(55vw, 420px); }
+  #click-hint { display: block; }
+}
+</style>
+</head>
+<body>
+
+<!-- Audio (se reproduce al desbloquear) -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="A.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Overlay oscuro -->
+<div id="img-overlay"></div>
+<!-- Imagen de destino -->
+<img id="finalImg" src="B.jpg" alt="Love U">
+
+<!-- Canvas partículas -->
+<canvas id="particles"></canvas>
+
+<!-- Pantalla de desbloqueo (necesaria en móvil para autoplay) -->
+<div id="unlock-screen">
+  <div class="heart-big">💕</div>
+  <p>Tengo algo especial para ti…<br>¿Estás listo/a para verlo?</p>
+  <button id="unlock-btn">✨ Abrir con amor ✨</button>
+</div>
+
+<!-- Escena principal -->
+<div id="wrap">
+  <svg id="scene" viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="softBlur">
+        <feGaussianBlur stdDeviation="3"/>
+      </filter>
+      <radialGradient id="catGrad" cx="38%" cy="35%" r="60%">
+        <stop offset="0%"   stop-color="#8a8a9e"/>
+        <stop offset="100%" stop-color="#4a4a5e"/>
+      </radialGradient>
+      <radialGradient id="bodyGrad" cx="40%" cy="30%" r="65%">
+        <stop offset="0%"   stop-color="#7a7a8e"/>
+        <stop offset="100%" stop-color="#3e3e52"/>
+      </radialGradient>
+      <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="rgba(232,67,147,0.18)"/>
+        <stop offset="100%" stop-color="rgba(232,67,147,0)"/>
+      </radialGradient>
+    </defs>
+
+    <!-- Aura romántica fondo -->
+    <circle id="aura" cx="350" cy="220" r="170" fill="url(#glowGrad)" opacity="0"/>
+
+    <!-- Sombra gato -->
+    <ellipse cx="348" cy="362" rx="120" ry="12" fill="rgba(0,0,0,0.28)" filter="url(#softBlur)"/>
+
+    <!-- ══ CUERPO ══ -->
+    <g id="catBody">
+      <!-- Cuerpo principal -->
+      <ellipse cx="348" cy="295" rx="90" ry="95" fill="url(#bodyGrad)" stroke="#1e1e2e" stroke-width="2.5"/>
+      <!-- Pecho claro -->
+      <ellipse cx="348" cy="310" rx="52" ry="55" fill="rgba(255,200,230,0.12)"/>
+      <!-- Textura pecho -->
+      <ellipse cx="348" cy="330" rx="38" ry="38" fill="rgba(255,182,217,0.08)"/>
+    </g>
+
+    <!-- ══ COLA ══ -->
+    <path id="tail" d="M430,320 Q480,288 496,235 Q510,180 482,145"
+      stroke="#5a5a6e" stroke-width="22" fill="none"
+      stroke-linecap="round" filter="url(#softBlur)"/>
+    <!-- Punta cola -->
+    <ellipse cx="482" cy="145" rx="14" ry="14" fill="#6a6a7e"/>
+
+    <!-- ══ PATAS ══ -->
+    <g id="paws">
+      <ellipse cx="308" cy="368" rx="24" ry="22" fill="#5a5a6e" stroke="#1e1e2e" stroke-width="1.5"/>
+      <ellipse cx="388" cy="368" rx="24" ry="22" fill="#5a5a6e" stroke="#1e1e2e" stroke-width="1.5"/>
+      <ellipse cx="308" cy="376" rx="14" ry="9"  fill="#ffb3d9" opacity="0.55"/>
+      <ellipse cx="388" cy="376" rx="14" ry="9"  fill="#ffb3d9" opacity="0.55"/>
+      <!-- Deditos -->
+      <ellipse cx="300" cy="377" rx="5" ry="4" fill="#ffc8e0" opacity="0.4"/>
+      <ellipse cx="316" cy="377" rx="5" ry="4" fill="#ffc8e0" opacity="0.4"/>
+      <ellipse cx="380" cy="377" rx="5" ry="4" fill="#ffc8e0" opacity="0.4"/>
+      <ellipse cx="396" cy="377" rx="5" ry="4" fill="#ffc8e0" opacity="0.4"/>
+    </g>
+
+    <!-- ══ CABEZA ══ -->
+    <g id="head">
+      <circle cx="348" cy="188" r="76" fill="url(#catGrad)" stroke="#1e1e2e" stroke-width="2.5"/>
+
+      <!-- Orejas -->
+      <path d="M302,132 L278,76 L318,135 Z"  fill="#5a5a6e" stroke="#1e1e2e" stroke-width="2"/>
+      <path d="M394,132 L418,76 L378,135 Z"  fill="#5a5a6e" stroke="#1e1e2e" stroke-width="2"/>
+      <path d="M305,128 L294,92  L318,130 Z" fill="#ffb3d9" opacity="0.75"/>
+      <path d="M391,128 L402,92  L378,130 Z" fill="#ffb3d9" opacity="0.75"/>
+
+      <!-- Mejillas -->
+      <circle cx="306" cy="196" r="17" fill="rgba(255,107,186,0.22)"/>
+      <circle cx="390" cy="196" r="17" fill="rgba(255,107,186,0.22)"/>
+
+      <!-- ══ OJOS ══ -->
+      <g id="eyes">
+        <!-- Esclerótica -->
+        <ellipse cx="326" cy="178" rx="14" ry="21" fill="white" stroke="#1e1e2e" stroke-width="1.5"/>
+        <ellipse cx="370" cy="178" rx="14" ry="21" fill="white" stroke="#1e1e2e" stroke-width="1.5"/>
+        <!-- Iris -->
+        <circle  cx="326" cy="181" r="10" fill="#e84393" stroke="#b5006a" stroke-width="0.8"/>
+        <circle  cx="370" cy="181" r="10" fill="#e84393" stroke="#b5006a" stroke-width="0.8"/>
+        <!-- Pupila -->
+        <ellipse cx="326" cy="181" rx="4"  ry="7"  fill="#1a0030"/>
+        <ellipse cx="370" cy="181" rx="4"  ry="7"  fill="#1a0030"/>
+        <!-- Brillo -->
+        <circle  cx="329" cy="176" r="4"   fill="white"/>
+        <circle  cx="373" cy="176" r="4"   fill="white"/>
+        <circle  cx="323" cy="184" r="1.8" fill="rgba(255,255,255,0.6)"/>
+        <circle  cx="367" cy="184" r="1.8" fill="rgba(255,255,255,0.6)"/>
+        <!-- Párpado sombra -->
+        <ellipse cx="326" cy="167" rx="14" ry="5" fill="rgba(0,0,0,0.1)"/>
+        <ellipse cx="370" cy="167" rx="14" ry="5" fill="rgba(0,0,0,0.1)"/>
+      </g>
+
+      <!-- Nariz corazón -->
+      <path d="M348,211 C344,205 336,205 336,212 C336,218 348,226 348,226 C348,226 360,218 360,212 C360,205 352,205 348,211 Z"
+        fill="#e84393" stroke="#b5006a" stroke-width="0.6"/>
+
+      <!-- Boca -->
+      <path d="M348,226 Q338,237 327,235" stroke="#e84393" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M348,226 Q358,237 369,235" stroke="#e84393" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+      <!-- Bigotes -->
+      <g opacity="0.8">
+        <line x1="278" y1="188" x2="236" y2="183" stroke="#cccce0" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="278" y1="198" x2="234" y2="198" stroke="#cccce0" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="278" y1="208" x2="236" y2="213" stroke="#cccce0" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="418" y1="188" x2="460" y2="183" stroke="#cccce0" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="418" y1="198" x2="462" y2="198" stroke="#cccce0" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="418" y1="208" x2="460" y2="213" stroke="#cccce0" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <!-- ══ LETRERO "Te Amo" ══ -->
+    <g id="love-text" opacity="0" transform="translate(0,0)">
+      <!-- Sombra letrero -->
+      <rect x="212" y="76" width="274" height="88" rx="22" fill="rgba(0,0,0,0.3)" transform="translate(4,6)" filter="url(#softBlur)"/>
+      <!-- Letrero fondo -->
+      <rect x="212" y="76" width="274" height="88" rx="22" fill="white" stroke="#e84393" stroke-width="3"/>
+      <rect x="218" y="82" width="262" height="76" rx="17" fill="#fff4f9"/>
+      <!-- Corazones esquinas -->
+      <text x="228" y="105" font-size="16" fill="#e84393" opacity="0.6">♥</text>
+      <text x="462" y="105" font-size="16" fill="#e84393" opacity="0.6">♥</text>
+      <text x="228" y="155" font-size="16" fill="#e84393" opacity="0.6">♥</text>
+      <text x="462" y="155" font-size="16" fill="#e84393" opacity="0.6">♥</text>
+      <!-- Texto principal -->
+      <text x="349" y="128" text-anchor="middle" font-family="Georgia, serif"
+        font-size="28" font-weight="bold" fill="#e84393"
+        filter="url(#glow)">Te Amo</text>
+      <!-- Subtexto -->
+      <text x="349" y="152" text-anchor="middle" font-family="Georgia, serif"
+        font-size="14" fill="#c0006a" font-style="italic" opacity="0.85">con todo mi corazón 💕</text>
+    </g>
+
+    <!-- Corazones decorativos que flotan del gato -->
+    <g id="floatingHearts" opacity="0">
+      <text id="fh1" x="160" y="140" font-size="20" fill="#e84393" opacity="0">♥</text>
+      <text id="fh2" x="520" y="120" font-size="14" fill="#ff6bba" opacity="0">♥</text>
+      <text id="fh3" x="200" y="80"  font-size="12" fill="#ffb3d9" opacity="0">♥</text>
+      <text id="fh4" x="490" y="160" font-size="18" fill="#e84393" opacity="0">♥</text>
+    </g>
+  </svg>
+
+  <!-- Hint táctil (visible en desktop) -->
+  <div id="click-hint">✨ Toca al gatito para sorprenderte ✨</div>
+</div>
+
+<!-- Contador de corazones -->
+<div id="heart-counter">♥ <span id="count">0</span></div>
+
+<!-- Botón música -->
+<button id="music-btn" aria-label="Música">🎵 Música</button>
+
+<script>
+/* ══════════════════════════════
+   ESTADO GLOBAL
+══════════════════════════════ */
+const audio = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('music-btn');
+const countEl = document.getElementById('count');
+const finalImg = document.getElementById('finalImg');
+const imgOverlay = document.getElementById('img-overlay');
+const scene = document.getElementById('scene');
+const loveText = document.getElementById('love-text');
+const aura = document.getElementById('aura');
+const floatingHearts = document.getElementById('floatingHearts');
+const clickHint = document.getElementById('click-hint');
+const unlockScreen = document.getElementById('unlock-screen');
+const unlockBtn = document.getElementById('unlock-btn');
+
+let clicks = 0;
+let musicPlaying = false;
+let revealed = false;
+let animFrame;
+
+const msgs = [
+  "Te quiero mucho 💕", "Eres mi todo ✨", "Mi amor eterno 🌹",
+  "Solo tú 💫", "Siempre contigo 💖", "Eres especial ⭐",
+  "Mi corazón es tuyo 💗", "Pienso en ti 🌸", "Te adoro 💝"
+];
+
+/* ══════════════════════════════
+   PARTÍCULAS DE FONDO
+══════════════════════════════ */
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, pts = [];
+
+function resizeCanvas() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', () => { resizeCanvas(); initPts(); });
+
+function initPts() {
+  const n = Math.min(Math.floor(W * H / 14000), 55);
+  pts = Array.from({ length: n }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 2.5 + 0.5,
+    s: (Math.random() - 0.5) * 0.4,
+    vy: -(Math.random() * 0.4 + 0.15),
+    a: Math.random() * 0.55 + 0.15,
+    t: Math.random() * Math.PI * 2,     // fase para ♥
+    heart: Math.random() < 0.35,
+    color: Math.random() < 0.5 ? '#ff6bba' : '#e84393'
+  }));
+}
+initPts();
+
+function drawHeart(ctx, x, y, size, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = '#e84393';
+  ctx.font = `${size * 2}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('♥', x, y);
+  ctx.restore();
+}
+
+function tickParticles() {
+  ctx.clearRect(0, 0, W, H);
+  for (const p of pts) {
+    p.y += p.vy;
+    p.x += p.s;
+    p.t += 0.015;
+    if (p.y < -20) { p.y = H + 10; p.x = Math.random() * W; }
+    if (p.x < -10 || p.x > W + 10) p.s *= -1;
+
+    if (p.heart) {
+      drawHeart(ctx, p.x, p.y, p.r + 3, p.a * (0.7 + 0.3 * Math.sin(p.t)));
+    } else {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.a * (0.7 + 0.3 * Math.sin(p.t));
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+  animFrame = requestAnimationFrame(tickParticles);
+}
+tickParticles();
+
+/* ══════════════════════════════
+   MÚSICA
+══════════════════════════════ */
+function startMusic() {
+  audio.volume = 0;
+  const playP = audio.play();
+  if (playP) {
+    playP.then(() => {
+      musicPlaying = true;
+      updateMusicBtn();
+      fadeIn(audio, 0, 0.75, 2000);
+    }).catch(() => {});
+  }
+}
+
+function fadeIn(el, from, to, dur) {
+  const step = (to - from) / (dur / 50);
+  el.volume = from;
+  const iv = setInterval(() => {
+    el.volume = Math.min(el.volume + step, to);
+    if (el.volume >= to) clearInterval(iv);
+  }, 50);
+}
+
+function toggleMusic() {
+  if (musicPlaying) {
+    audio.pause();
+    musicPlaying = false;
+  } else {
+    audio.play().catch(() => {});
+    musicPlaying = true;
+  }
+  updateMusicBtn();
+}
+
+function updateMusicBtn() {
+  musicBtn.innerHTML = musicPlaying ? '🎵 Pausar' : '🎵 Música';
+  musicBtn.classList.toggle('playing', musicPlaying);
+}
+
+musicBtn.addEventListener('click', toggleMusic);
+
+/* ══════════════════════════════
+   PANTALLA DESBLOQUEO
+══════════════════════════════ */
+unlockBtn.addEventListener('click', () => {
+  unlockScreen.classList.add('hidden');
+  setTimeout(() => { unlockScreen.style.display = 'none'; }, 600);
+  startMusic();
+  startCatAnimations();
+});
+
+/* ══════════════════════════════
+   ANIMACIONES DEL GATO
+══════════════════════════════ */
+function startCatAnimations() {
+  animateTail();
+  animateBlink();
+  animateAura();
+  animateFHeart('fh1', 3200);
+  animateFHeart('fh2', 5100);
+  animateFHeart('fh3', 7400);
+  animateFHeart('fh4', 4600);
+}
+
+/* Cola ondulante */
+const tail = document.getElementById('tail');
+let tailPhase = 0;
+function animateTail() {
+  tailPhase += 0.025;
+  const sway = Math.sin(tailPhase) * 18;
+  tail.setAttribute('d',
+    `M430,320 Q${480 + sway},${288 - sway * 0.4} ${496 + sway * 0.5},235 Q${510 + sway * 0.3},180 ${482 - sway * 0.2},145`
+  );
+  requestAnimationFrame(animateTail);
+}
+
+/* Parpadeo */
+const eyeL = document.querySelector('#eyes ellipse:nth-child(1)');
+const eyeR = document.querySelector('#eyes ellipse:nth-child(2)');
+function animateBlink() {
+  const blink = () => {
+    let ry = 21, shrink = true;
+    const iv = setInterval(() => {
+      ry = shrink ? Math.max(ry - 5, 1) : Math.min(ry + 5, 21);
+      if (ry <= 1) shrink = false;
+      if (ry >= 21 && !shrink) { clearInterval(iv); schedBlink(); }
+      eyeL && eyeL.setAttribute('ry', ry);
+      eyeR && eyeR.setAttribute('ry', ry);
+    }, 28);
+  };
+  const schedBlink = () => setTimeout(blink, 2500 + Math.random() * 3500);
+  schedBlink();
+}
+
+/* Aura pulsante */
+function animateAura() {
+  let t = 0;
+  const tick = () => {
+    t += 0.02;
+    const op = 0.25 + 0.18 * Math.sin(t);
+    aura.setAttribute('opacity', op);
+    requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+/* Corazones flotantes en SVG */
+function animateFHeart(id, interval) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const tick = () => {
+    let t = 0, startY = parseFloat(el.getAttribute('y'));
+    el.setAttribute('opacity', '0.9');
+    const iv = setInterval(() => {
+      t++;
+      el.setAttribute('y', startY - t * 0.8);
+      el.setAttribute('opacity', Math.max(0, 0.9 - t / 60));
+      if (t >= 60) {
+        clearInterval(iv);
+        el.setAttribute('y', startY);
+        el.setAttribute('opacity', '0');
+        setTimeout(tick, interval + Math.random() * 2000);
+      }
+    }, 30);
+  };
+  setTimeout(tick, Math.random() * interval);
+}
+
+/* ══════════════════════════════
+   INTERACCIÓN AL TOCAR/CLICK
+══════════════════════════════ */
+function spawnRipple(x, y) {
+  const d = document.createElement('div');
+  d.className = 'ripple';
+  d.style.left = x + 'px';
+  d.style.top  = y + 'px';
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 900);
+}
+
+function spawnFlyHeart(x, y) {
+  const d = document.createElement('div');
+  d.className = 'fly-heart';
+  d.textContent = ['♥','💕','💖','💗','💝'][Math.floor(Math.random() * 5)];
+  d.style.left = (x - 12 + (Math.random() - 0.5) * 30) + 'px';
+  d.style.top  = (y - 12) + 'px';
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 2500);
+}
+
+function spawnMsg(x, y) {
+  const d = document.createElement('div');
+  d.className = 'romantic-msg';
+  d.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+  d.style.left = Math.min(Math.max(x - 80, 8), window.innerWidth - 200) + 'px';
+  d.style.top  = (y - 40) + 'px';
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 4000);
+}
+
+function handleTap(x, y) {
+  if (unlockScreen.style.display !== 'none' && !unlockScreen.classList.contains('hidden')) return;
+
+  clicks++;
+  countEl.textContent = clicks;
+
+  spawnRipple(x, y);
+  spawnFlyHeart(x, y);
+
+  // Mensaje cada 3 clicks
+  if (clicks % 3 === 0) spawnMsg(x, y);
+
+  // Revelar letrero
+  if (clicks === 1) revealLoveText();
+
+  // Revelar imagen a los 10 clicks
+  if (clicks === 10 && !revealed) revealImage();
+
+  // Ocultar hint
+  if (clicks >= 1) { clickHint.style.opacity = '0'; }
+}
+
+scene.addEventListener('click', e => {
+  const r = scene.getBoundingClientRect();
+  handleTap(r.left + r.width / 2, r.top + r.height / 2);
+});
+scene.addEventListener('touchend', e => {
+  e.preventDefault();
+  const t = e.changedTouches[0];
+  handleTap(t.clientX, t.clientY);
+}, { passive: false });
+
+/* ══════════════════════════════
+   REVELAR LETRERO
+══════════════════════════════ */
+function revealLoveText() {
+  let op = 0;
+  loveText.style.display = 'block';
+  const iv = setInterval(() => {
+    op = Math.min(op + 0.06, 1);
+    loveText.setAttribute('opacity', op);
+    if (op >= 1) clearInterval(iv);
+  }, 30);
+
+  // Sacudir el letrero de forma suave
+  let t = 0;
+  const shake = setInterval(() => {
+    t++;
+    const tx = Math.sin(t * 0.5) * 3;
+    const ty = Math.sin(t * 0.7) * 2;
+    loveText.setAttribute('transform', `translate(${tx},${ty})`);
+    if (t > 40) {
+      clearInterval(shake);
+      loveText.setAttribute('transform', 'translate(0,0)');
+    }
+  }, 30);
+}
+
+/* ══════════════════════════════
+   REVELAR IMAGEN FINAL
+══════════════════════════════ */
+function revealImage() {
+  revealed = true;
+
+  // Mostrar overlay + imagen
+  imgOverlay.classList.add('show');
+  finalImg.classList.add('show');
+
+  // Pulso de aura intensa
+  let burst = 0;
+  const iv = setInterval(() => {
+    burst++;
+    aura.setAttribute('opacity', 0.5 + 0.3 * Math.sin(burst * 0.3));
+    if (burst > 60) clearInterval(iv);
+  }, 30);
+
+  // Confetti de corazones
+  for (let i = 0; i < 20; i++) {
+    setTimeout(() => {
+      spawnFlyHeart(
+        30 + Math.random() * (window.innerWidth - 60),
+        60 + Math.random() * (window.innerHeight - 120)
+      );
+    }, i * 100);
+  }
+
+  // Cerrar al tocar la imagen o el overlay
+  function closeImage() {
+    finalImg.style.opacity = '0';
+    finalImg.style.transform = 'scale(0.5) rotate(5deg)';
+    imgOverlay.classList.remove('show');
+    setTimeout(() => {
+      finalImg.classList.remove('show');
+      finalImg.style.opacity = '';
+      finalImg.style.transform = '';
+      revealed = false;
+      clicks = 0;
+      countEl.textContent = '0';
+    }, 700);
+    finalImg.removeEventListener('click', closeImage);
+    imgOverlay.removeEventListener('click', closeImage);
+  }
+
+  setTimeout(() => {
+    finalImg.addEventListener('click', closeImage);
+    imgOverlay.addEventListener('click', closeImage);
+  }, 600);
+}
+</script>
+</body>
+</html>
